@@ -6,18 +6,26 @@ This repository is the source of truth for a headless Linux VM setup.
 
 - Target platform: Ubuntu/Debian-style headless Linux VM
 - Canonical clone location: `~/.dotfiles`
-- Do not treat macOS or GUI tooling as in-scope for this repo
 
-## Setup Contract
+## Initial Bootstrap
 
-When an agent is asked to set up a VM with this repo, assume the repository has
-been cloned to `~/.dotfiles`:
+Assume the user has already completed the manual bootstrap flow:
+
+1. Cloned this repo to `~/.dotfiles`
+2. Ran [`install.sh`](./install.sh) from the repo root
+
+## Agent Follow-Up
+
+After bootstrap, when an agent is asked to continue setup with this repo, assume
+the repository is already present at `~/.dotfiles`:
 
 1. Treat files inside `~/.dotfiles` as the only source of truth
-2. Run [`install.sh`](./install.sh) from the repo root
-3. Prefer repo-managed edits over one-off fixes in `$HOME`
-4. Do not add automatic headless AstroNvim bootstrap into the installer; Neovim
-   initialization should be run manually after setup
+2. Prefer repo-managed edits over one-off fixes in `$HOME`
+3. Ask the user what `git user.name` should be for this VM
+4. Ask whether they want to configure `git user.email`, and if so, what it
+   should be
+5. Configure the chosen Git identity explicitly instead of relying on the VM's
+   fallback identity before making commits from the VM
 
 If a live config file under `$HOME` needs to change, update the repo file first
 and then symlink it into place.
@@ -25,18 +33,6 @@ and then symlink it into place.
 During setup, upgrade normal distro-managed packages conservatively. Do not
 override versions for tools that this repo intentionally pins outside the distro
 package manager, such as Neovim `0.10.4`.
-
-## Required Git Identity Setup
-
-Git identity is a required part of VM setup.
-
-- During setup, ask the user what `git user.name` should be for this VM
-- During setup, ask the user whether they want to configure a `git user.email`,
-  and if so, what it should be
-- Configure the chosen Git identity explicitly instead of relying on the VM's
-  fallback identity
-- Do this as part of the initial machine setup, before making commits from the
-  VM
 
 ## Managed Symlinks
 
@@ -55,7 +51,8 @@ The intended live links are:
 The VM bootstrap is expected to install:
 
 - `zsh`, `git`, `tmux`, `ripgrep`, `fd`, `fzf`, `jq`, `direnv`, `bat`
-- `node`, `npm`, `pnpm`, `yarn`
+- `Node.js 20+`, `npm`, `pnpm`, `yarn`
+- `codex`, `claude`, `gemini`
 - `python3`, `pipx`, `pyenv`
 - `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
 - `go`
@@ -67,52 +64,41 @@ Neovim is pinned to `0.10.4`.
 
 - Do not rely on the distro `neovim` package version
 - Use the repo bootstrap, which installs the official `0.10.4` Linux tarball
-- AstroNvim in this repo should be tested against `NVIM_APPNAME=astronvim_v4 nvim`
+- Do not add automatic headless AstroNvim bootstrap into the installer
 
 ## Shell and Tmux Notes
 
 - `zsh` is the default shell
 - `oh-my-zsh` is expected
-- Installed zsh plugins:
-  - `zsh-autosuggestions`
-  - `zsh-syntax-highlighting`
+- Installed zsh plugins: `zsh-autosuggestions`, `zsh-syntax-highlighting`
 - TPM is expected for tmux plugins
 - TPM plugin installation may be bootstrapped by the installer
-- AstroNvim should initialize on first interactive `NVIM_APPNAME=astronvim_v4 nvim`
-  launch, not during headless install
 
 ## Agent Rules
 
 - Keep the repo Linux-safe and VM-focused
-- Do not reintroduce machine-specific paths like `/Users/...`, `~/scripts`, or other host-only aliases
-- Do not add macOS-only, Homebrew-only, or GUI-only configuration back into the repo
+- Avoid machine-specific paths and host-only aliases
 - Prefer changing repo files over mutating generated or cached state under `~/.local/share`
 - If plugin lockfiles change because of an intentional bootstrap or plugin sync, keep them in the repo if they reflect the desired state
 
+## Change Workflow
+
+- The user may request changes to the repo-managed configuration after bootstrap.
+- Make the requested changes in the repo, then validate them before asking the
+  user to approve the result.
+- Do not commit changes until the user has validated the result and explicitly
+  approved committing them.
+- When committing approved changes, use a branch named `agent/<topic>`.
+- After committing, the agent may open a pull request targeting the long-running
+  base branch for the user's review and approval on GitHub.
+
 ## Validation
 
-After changes that affect setup, validate at least:
+After changes that affect setup, validate command availability and basic health
+for at least:
 
-- `zsh`
-- `tmux`
-- `nvim`
-- `rg`
-- `fd`
-- `bat`
-- `node`
-- `npm`
-- `pnpm`
-- `yarn`
-- `python3`
-- `pipx`
-- `pyenv`
-- `rustup`
-- `just`
-- `eza`
-- `macchina`
-- `starship`
-
-If AstroNvim boots but Mason-managed tools are still installing, that is not the
-same as a broken Neovim config. Confirm startup separately from optional package
-downloads, and do it interactively rather than by adding headless AstroNvim
-bootstrap to the installer.
+- Core shell and CLI tools: `git`, `zsh`, `tmux`, `rg`, `fd`, `bat`, `jq`, `direnv`
+- Node and agent CLIs: `node`, `npm`, `pnpm`, `yarn`, `codex`, `claude`, `gemini`
+- Python tooling: `python3`, `pipx`, `pyenv`
+- Rust tooling: `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
+- Other tools: `nvim`, `go`, `btop`

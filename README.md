@@ -6,27 +6,32 @@ This repo is intended to be cloned to `~/.dotfiles` and treated as the source of
 truth for the shell, tmux, prompt, AstroNvim, and supporting CLI tooling on an
 Ubuntu/Debian VM.
 
-## What the installer does
+## Tooling
 
-The root [`install.sh`](./install.sh) script bootstraps the
-same setup configured on this machine:
+The root [`install.sh`](./install.sh) script installs and configures:
 
-- Installs the required Ubuntu packages with `apt`
-- Upgrades already-installed `apt` packages conservatively with `apt-get upgrade`
-- Installs Neovim `0.10.4` from the official release tarball
-- Installs `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, TPM,
-  and `pyenv`
-- Initializes `rustup` and installs `just`, `eza`, `macchina`, and `starship`
-- Installs the Node globals used by this setup, including `@openai/codex`,
-  `typescript`, `neovim`, `pnpm`, and `yarn`
-- Creates the Linux symlinks from this repo into `$HOME`
+- Shell and CLI tools: `zsh`, `git`, `tmux`, `ripgrep`, `fd`, `fzf`, `jq`,
+  `direnv`, `bat`, `btop`
+- Node tooling: `node`, `npm`, `pnpm`, `yarn`
+- Agent CLIs: `codex`, `claude`, `gemini`
+- Python tooling: `python3`, `pipx`, `pyenv`
+- Rust tooling: `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
+- Go: `go`
+- Neovim: pinned to `0.10.4`
+
+## Setup Behavior
+
+- Upgrades distro-managed packages conservatively with `apt-get upgrade`
+- Installs `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, and TPM
+- Installs the managed global Node packages for this setup, including the agent CLIs
+- Creates the repo-managed symlinks into `$HOME`
 - Exposes Ubuntu's `fdfind` and `batcat` binaries as `fd` and `bat`
 - Switches the login shell to `zsh`
 - Bootstraps tmux plugins
 
 ## Usage
 
-Clone the repo to `~/.dotfiles`, then run the installer from inside the repo:
+Clone the repo to `~/.dotfiles`, navigate into it, and run the installer:
 
 ```bash
 git clone https://vm-dotfiles.int.exe.xyz/Skarian/vm-dotfiles.git ~/.dotfiles
@@ -34,25 +39,16 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-After the script finishes, open a new shell session or log in again to pick up
-the default `zsh` shell cleanly.
-
-Then do the remaining interactive Neovim bootstrap yourself:
-
-```bash
-NVIM_APPNAME=astronvim_v4 nvim
-```
+After the installer finishes, open a new shell session. Then use the agent for
+follow-up setup, including Git identity configuration, validation, or
+machine-specific tweaks.
 
 ## Notes
 
 - `pyenv` is installed from its upstream Git repository because Ubuntu 24.04
   does not ship a `pyenv` package through `apt`.
+- Node.js is installed at a version new enough for the managed agent CLIs.
 - Neovim is pinned to `0.10.4` for AstroNvim compatibility instead of using the
   older Ubuntu package.
-- The installer upgrades normal `apt` packages, but keeps repo-pinned tools on
-  the versions defined by this repo.
-- The installer is idempotent for normal re-runs: it only clones missing
-  third-party repos and backs up conflicting live files before replacing them
-  with symlinks.
-- The installer bootstraps tmux plugins, but does not perform headless AstroNvim
-  bootstrap. Let AstroNvim initialize on first interactive launch.
+- The installer is safe to rerun: it only clones missing third-party repos and
+  backs up conflicting live files before replacing them with symlinks.
