@@ -22,6 +22,8 @@ fi
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$HOME/.local/bin:$HOME/node/bin:$HOME/.cargo/bin:$PYENV_ROOT/bin:$PATH"
 export EMSDK_QUIET=1
+export LANG="C.UTF-8"
+export LC_ALL="C.UTF-8"
 
 # Tool initialization
 if [[ -o interactive ]] && [[ -z "${ZSH_EXECUTION_STRING:-}" ]] && command -v starship >/dev/null 2>&1; then
