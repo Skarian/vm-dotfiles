@@ -116,6 +116,11 @@ Neovim is pinned to `0.10.4`.
   state for review.
 - When requested, open a pull request from `agent/<topic>` into `main` for the
   user's review and approval on GitHub.
+- Do not treat `gh` authentication as a required precondition for branch or PR
+  workflow if `git push` and the GitHub connector are sufficient. Prefer using
+  `git` for branch and push operations, and use the GitHub connector to inspect
+  or open pull requests. Use `gh` only when the connector cannot complete the
+  required GitHub operation.
 - After opening a pull request, record the PR number and URL in
   `.continuity.yml`.
 - On later turns, if the current branch is an `agent/<topic>` branch, check the
