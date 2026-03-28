@@ -8,6 +8,8 @@ OH_MY_ZSH_DIR="${HOME}/.oh-my-zsh"
 OH_MY_ZSH_CUSTOM="${OH_MY_ZSH_DIR}/custom"
 TPM_DIR="${HOME}/.tmux/plugins/tpm"
 PYENV_DIR="${HOME}/.pyenv"
+MIN_NODE_MAJOR_VERSION="20"
+NODE_LTS_MAJOR_VERSION="22"
 NEOVIM_VERSION="0.10.4"
 NEOVIM_PARENT_DIR="${HOME}/.local/opt"
 NEOVIM_INSTALL_DIR="${NEOVIM_PARENT_DIR}/nvim-linux-x86_64-${NEOVIM_VERSION}"
@@ -27,8 +29,6 @@ APT_PACKAGES=(
   jq
   direnv
   bat
-  nodejs
-  npm
   python3
   pipx
   rustup
@@ -45,6 +45,8 @@ CARGO_PACKAGES=(
 
 NPM_GLOBALS=(
   @openai/codex
+  @anthropic-ai/claude-code
+  @google/gemini-cli
   typescript
   neovim
   pnpm
@@ -62,6 +64,14 @@ die() {
 
 have() {
   command -v "$1" >/dev/null 2>&1
+}
+
+apt_get() {
+  sudo env DEBIAN_FRONTEND=noninteractive \
+    apt-get \
+    -o Acquire::ForceIPv4=true \
+    -o Acquire::Retries=3 \
+    "$@"
 }
 
 require_user_context() {
@@ -118,15 +128,17 @@ backup_and_link() {
 
 install_apt_packages() {
   log "Refreshing apt metadata"
-  sudo apt-get update
+  if ! apt_get update; then
+    die "apt refresh failed; check Ubuntu mirror reachability and /etc/apt/sources.list.d/ubuntu.sources"
+  fi
 
   # Keep apt-managed packages current, but avoid a more aggressive dist/full
   # upgrade. Repo-pinned tools such as Neovim are managed separately below.
   log "Upgrading installed apt packages"
-  sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+  apt_get upgrade -y
 
   log "Installing apt packages"
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${APT_PACKAGES[@]}"
+  apt_get install -y "${APT_PACKAGES[@]}"
 }
 
 install_neovim() {
@@ -146,6 +158,23 @@ install_neovim() {
   fi
 
   ln -sfn "${NEOVIM_INSTALL_DIR}/bin/nvim" "${LOCAL_BIN_DIR}/nvim"
+}
+
+install_nodejs() {
+  local node_major="0"
+
+  if have node && have npm; then
+    node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || printf '0')"
+  fi
+
+  if [ "${node_major}" -ge "${MIN_NODE_MAJOR_VERSION}" ]; then
+    log "Keeping existing Node.js $(node --version)"
+    return
+  fi
+
+  log "Installing Node.js ${NODE_LTS_MAJOR_VERSION}.x from NodeSource"
+  curl -fsSL "https://deb.nodesource.com/setup_${NODE_LTS_MAJOR_VERSION}.x" | sudo bash -
+  apt_get install -y nodejs
 }
 
 install_shell_tooling() {
@@ -193,7 +222,7 @@ create_linux_shims() {
     ln -sfn "$(command -v batcat)" "${LOCAL_BIN_DIR}/bat"
   fi
 
-  for tool in codex pnpm tsc tsserver neovim-node-host; do
+  for tool in codex claude gemini pnpm tsc tsserver neovim-node-host; do
     if [ -e "${NODE_GLOBAL_PREFIX}/bin/${tool}" ]; then
       ln -sfn "${NODE_GLOBAL_PREFIX}/bin/${tool}" "${LOCAL_BIN_DIR}/${tool}"
     fi
@@ -249,6 +278,7 @@ main() {
 
   install_apt_packages
   install_neovim
+  install_nodejs
   install_shell_tooling
   install_rust_tools
   install_node_globals
@@ -258,8 +288,6 @@ main() {
   bootstrap_tmux
 
   log "Done. Open a new shell session to pick up the default zsh login shell."
-  log "Then bootstrap manually:"
-  log "  NVIM_APPNAME=astronvim_v4 nvim"
 }
 
 main "$@"
