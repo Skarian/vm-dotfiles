@@ -98,6 +98,8 @@ Neovim is pinned to `0.10.4`.
 - Do not commit changes until the user has validated the result and explicitly
   approved committing them.
 - When committing approved changes, use a branch named `agent/<topic>`.
+- Use Conventional Commit messages for agent-created commits, such as
+  `feat: ...`, `fix: ...`, `docs: ...`, or `chore: ...`.
 - Record the active branch, topic, and PR metadata in `.continuity.yml`.
 - If the user requests several follow-up changes in the same line of work, keep
   using the same `agent/<topic>` branch and add additional approved commits to
