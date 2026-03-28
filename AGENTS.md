@@ -9,10 +9,8 @@ This repository is the source of truth for a headless Linux VM setup.
 
 ## Initial Bootstrap
 
-Assume the user has already completed the manual bootstrap flow:
-
-1. Cloned this repo to `~/.dotfiles`
-2. Ran [`install.sh`](./install.sh) from the repo root
+Assume the user has already cloned this repo to `~/.dotfiles` and run
+[`install.sh`](./install.sh) from the repo root.
 
 ## Agent Follow-Up
 
@@ -81,6 +79,17 @@ Neovim is pinned to `0.10.4`.
 - Prefer changing repo files over mutating generated or cached state under `~/.local/share`
 - If plugin lockfiles change because of an intentional bootstrap or plugin sync, keep them in the repo if they reflect the desired state
 
+## Continuity
+
+- Use a local gitignored file named `.continuity.yml` to track branch and pull
+  request continuity across turns and sessions.
+- Treat GitHub as the source of truth for PR state, and `.continuity.yml` as the
+  local record of the current line of work.
+- Before doing branch or PR workflow, read `.continuity.yml` if it exists, check
+  the current git branch, and reconcile that state with GitHub.
+- Keep only one active line of work in `.continuity.yml` at a time. Record older
+  completed or abandoned lines of work in the history section if needed.
+
 ## Change Workflow
 
 - The user may request changes to the repo-managed configuration after bootstrap.
@@ -89,8 +98,31 @@ Neovim is pinned to `0.10.4`.
 - Do not commit changes until the user has validated the result and explicitly
   approved committing them.
 - When committing approved changes, use a branch named `agent/<topic>`.
-- After committing, the agent may open a pull request targeting the long-running
-  base branch for the user's review and approval on GitHub.
+- Record the active branch, topic, and PR metadata in `.continuity.yml`.
+- If the user requests several follow-up changes in the same line of work, keep
+  using the same `agent/<topic>` branch and add additional approved commits to
+  it until the user wants a pull request opened.
+- If there is already an open PR for the active `agent/<topic>` branch and the
+  new request is part of the same line of work, continue on that branch and push
+  additional approved commits to it.
+- If there is already an open PR for the active `agent/<topic>` branch and the
+  new request is unrelated, do not silently stack it onto that branch; ask
+  whether to continue the open branch or start a new one.
+- Do not open a pull request until the user has approved the current branch
+  state for review.
+- When requested, open a pull request from `agent/<topic>` into `main` for the
+  user's review and approval on GitHub.
+- After opening a pull request, record the PR number and URL in
+  `.continuity.yml`.
+- On later turns, if the current branch is an `agent/<topic>` branch, check the
+  GitHub PR state for that branch before continuing work or cleanup.
+- If that PR is merged and the working tree is clean, switch the local repo back
+  to `main` so the working tree reflects the long-running base branch again, and
+  update `.continuity.yml` to clear the active line of work.
+- If that PR is merged but the working tree is not clean, do not switch branches
+  until the agent has resolved or confirmed what to do with the local changes.
+- If `.continuity.yml` is missing or stale, reconstruct the current state from
+  the active branch and GitHub before continuing.
 
 ## Validation
 
