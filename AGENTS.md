@@ -19,11 +19,12 @@ the repository is already present at `~/.dotfiles`:
 
 1. Treat files inside `~/.dotfiles` as the only source of truth
 2. Prefer repo-managed edits over one-off fixes in `$HOME`
-3. Ask the user what `git user.name` should be for this VM
-4. Ask whether they want to configure `git user.email`, and if so, what it
-   should be
-5. Configure the chosen Git identity explicitly instead of relying on the VM's
-   fallback identity before making commits from the VM
+3. Before making commits from the VM, verify whether `git user.name` and
+   `git user.email` are already explicitly configured
+4. Ask the user for Git identity values only if they are missing, ambiguous, or
+   the user wants to change them
+5. Configure any missing or updated Git identity explicitly instead of relying
+   on the VM's fallback identity before making commits from the VM
 
 If a live config file under `$HOME` needs to change, update the repo file first
 and then symlink it into place.
@@ -48,7 +49,8 @@ The intended live links are:
 
 The VM bootstrap is expected to install:
 
-- `zsh`, `git`, `tmux`, `ripgrep`, `fd`, `fzf`, `jq`, `direnv`, `bat`
+- `zsh`, `git`, `tmux`, `ripgrep`, `fd`, `fzf`, `jq`, `direnv`, `bat`,
+  `bubblewrap`
 - `Node.js 20+`, `npm`, `pnpm`, `yarn`
 - `codex`, `claude`, `gemini`
 - `python3`, `pipx`, `pyenv`
@@ -114,6 +116,11 @@ Neovim is pinned to `0.10.4`.
   state for review.
 - When requested, open a pull request from `agent/<topic>` into `main` for the
   user's review and approval on GitHub.
+- Do not treat `gh` authentication as a required precondition for branch or PR
+  workflow if `git push` and the GitHub connector are sufficient. Prefer using
+  `git` for branch and push operations, and use the GitHub connector to inspect
+  or open pull requests. Use `gh` only when the connector cannot complete the
+  required GitHub operation.
 - After opening a pull request, record the PR number and URL in
   `.continuity.yml`.
 - On later turns, if the current branch is an `agent/<topic>` branch, check the
@@ -131,7 +138,8 @@ Neovim is pinned to `0.10.4`.
 After changes that affect setup, validate command availability and basic health
 for at least:
 
-- Core shell and CLI tools: `git`, `zsh`, `tmux`, `rg`, `fd`, `bat`, `jq`, `direnv`
+- Core shell and CLI tools: `git`, `zsh`, `tmux`, `rg`, `fd`, `bat`, `jq`,
+  `direnv`, `bwrap`
 - Node and agent CLIs: `node`, `npm`, `pnpm`, `yarn`, `codex`, `claude`, `gemini`
 - Python tooling: `python3`, `pipx`, `pyenv`
 - Rust tooling: `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`

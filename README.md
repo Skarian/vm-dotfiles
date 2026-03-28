@@ -11,7 +11,7 @@ Ubuntu/Debian VM.
 The root [`install.sh`](./install.sh) script installs and configures:
 
 - Shell and CLI tools: `zsh`, `git`, `tmux`, `ripgrep`, `fd`, `fzf`, `jq`,
-  `direnv`, `bat`, `btop`
+  `direnv`, `bat`, `bubblewrap`, `btop`
 - Node tooling: `node`, `npm`, `pnpm`, `yarn`
 - Agent CLIs: `codex`, `claude`, `gemini`
 - Python tooling: `python3`, `pipx`, `pyenv`

@@ -29,6 +29,7 @@ APT_PACKAGES=(
   jq
   direnv
   bat
+  bubblewrap
   python3
   pipx
   rustup
