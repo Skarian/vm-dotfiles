@@ -117,8 +117,15 @@ backup_and_link() {
 }
 
 install_apt_packages() {
-  log "Installing apt packages"
+  log "Refreshing apt metadata"
   sudo apt-get update
+
+  # Keep apt-managed packages current, but avoid a more aggressive dist/full
+  # upgrade. Repo-pinned tools such as Neovim are managed separately below.
+  log "Upgrading installed apt packages"
+  sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+
+  log "Installing apt packages"
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${APT_PACKAGES[@]}"
 }
 

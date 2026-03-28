@@ -12,6 +12,7 @@ The root [`install.sh`](./install.sh) script bootstraps the
 same setup configured on this machine:
 
 - Installs the required Ubuntu packages with `apt`
+- Upgrades already-installed `apt` packages conservatively with `apt-get upgrade`
 - Installs Neovim `0.10.4` from the official release tarball
 - Installs `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, TPM,
   and `pyenv`
@@ -42,6 +43,8 @@ the default `zsh` shell cleanly.
   does not ship a `pyenv` package through `apt`.
 - Neovim is pinned to `0.10.4` for AstroNvim compatibility instead of using the
   older Ubuntu package.
+- The installer upgrades normal `apt` packages, but keeps repo-pinned tools on
+  the versions defined by this repo.
 - The installer is idempotent for normal re-runs: it only clones missing
   third-party repos and backs up conflicting live files before replacing them
   with symlinks.

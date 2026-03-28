@@ -20,6 +20,10 @@ been cloned to `~/.dotfiles`:
 If a live config file under `$HOME` needs to change, update the repo file first
 and then symlink it into place.
 
+During setup, upgrade normal distro-managed packages conservatively. Do not
+override versions for tools that this repo intentionally pins outside the distro
+package manager, such as Neovim `0.10.4`.
+
 ## Required Git Identity Setup
 
 Git identity is a required part of VM setup.
