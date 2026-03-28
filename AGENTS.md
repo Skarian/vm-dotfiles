@@ -20,6 +20,18 @@ been cloned to `~/.dotfiles`:
 If a live config file under `$HOME` needs to change, update the repo file first
 and then symlink it into place.
 
+## Required Git Identity Setup
+
+Git identity is a required part of VM setup.
+
+- During setup, ask the user what `git user.name` should be for this VM
+- During setup, ask the user whether they want to configure a `git user.email`,
+  and if so, what it should be
+- Configure the chosen Git identity explicitly instead of relying on the VM's
+  fallback identity
+- Do this as part of the initial machine setup, before making commits from the
+  VM
+
 ## Managed Symlinks
 
 The intended live links are:
