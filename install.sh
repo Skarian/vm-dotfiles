@@ -243,13 +243,6 @@ bootstrap_tmux() {
   tmux kill-session -t bootstrap >/dev/null 2>&1 || true
 }
 
-bootstrap_neovim() {
-  log "Bootstrapping AstroNvim plugins"
-  export PATH="${LOCAL_BIN_DIR}:${NODE_GLOBAL_PREFIX}/bin:${HOME}/.cargo/bin:${PYENV_DIR}/bin:${PATH}"
-  NVIM_APPNAME=astronvim_v4 nvim --headless "+Lazy! sync" +qa || true
-  log "If Mason-managed tools are still pending, run: NVIM_APPNAME=astronvim_v4 nvim"
-}
-
 main() {
   require_user_context
   require_apt
@@ -263,9 +256,10 @@ main() {
   setup_symlinks
   set_default_shell
   bootstrap_tmux
-  bootstrap_neovim
 
   log "Done. Open a new shell session to pick up the default zsh login shell."
+  log "Then bootstrap manually:"
+  log "  NVIM_APPNAME=astronvim_v4 nvim"
 }
 
 main "$@"

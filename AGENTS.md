@@ -16,6 +16,8 @@ been cloned to `~/.dotfiles`:
 1. Treat files inside `~/.dotfiles` as the only source of truth
 2. Run [`install.sh`](./install.sh) from the repo root
 3. Prefer repo-managed edits over one-off fixes in `$HOME`
+4. Do not add automatic headless AstroNvim bootstrap into the installer; Neovim
+   initialization should be run manually after setup
 
 If a live config file under `$HOME` needs to change, update the repo file first
 and then symlink it into place.
@@ -75,6 +77,9 @@ Neovim is pinned to `0.10.4`.
   - `zsh-autosuggestions`
   - `zsh-syntax-highlighting`
 - TPM is expected for tmux plugins
+- TPM plugin installation may be bootstrapped by the installer
+- AstroNvim should initialize on first interactive `NVIM_APPNAME=astronvim_v4 nvim`
+  launch, not during headless install
 
 ## Agent Rules
 
@@ -109,4 +114,5 @@ After changes that affect setup, validate at least:
 
 If AstroNvim boots but Mason-managed tools are still installing, that is not the
 same as a broken Neovim config. Confirm startup separately from optional package
-downloads.
+downloads, and do it interactively rather than by adding headless AstroNvim
+bootstrap to the installer.

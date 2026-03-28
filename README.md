@@ -22,7 +22,7 @@ same setup configured on this machine:
 - Creates the Linux symlinks from this repo into `$HOME`
 - Exposes Ubuntu's `fdfind` and `batcat` binaries as `fd` and `bat`
 - Switches the login shell to `zsh`
-- Bootstraps tmux plugins and the AstroNvim config
+- Bootstraps tmux plugins
 
 ## Usage
 
@@ -37,6 +37,12 @@ cd ~/.dotfiles
 After the script finishes, open a new shell session or log in again to pick up
 the default `zsh` shell cleanly.
 
+Then do the remaining interactive Neovim bootstrap yourself:
+
+```bash
+NVIM_APPNAME=astronvim_v4 nvim
+```
+
 ## Notes
 
 - `pyenv` is installed from its upstream Git repository because Ubuntu 24.04
@@ -48,6 +54,5 @@ the default `zsh` shell cleanly.
 - The installer is idempotent for normal re-runs: it only clones missing
   third-party repos and backs up conflicting live files before replacing them
   with symlinks.
-- AstroNvim plugin bootstrap is automated. If Mason-managed tools are still
-  downloading when the headless bootstrap exits, run
-  `NVIM_APPNAME=astronvim_v4 nvim` once interactively to finish them.
+- The installer bootstraps tmux plugins, but does not perform headless AstroNvim
+  bootstrap. Let AstroNvim initialize on first interactive launch.
