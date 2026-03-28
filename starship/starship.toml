@@ -3,7 +3,7 @@ palette = "catppuccin_frappe"
 format = """
 [](blue)\
 $os\
-$username\
+${custom.identity}\
 [](bg:surface0 fg:blue)\
 $directory\
 [](fg:surface0)\
@@ -28,6 +28,11 @@ style_user = "base bg:blue"
 style_root = "bg:blue"
 format = '[$user ]($style)'
 disabled = false
+
+[custom.identity]
+command = 'hostname -s 2>/dev/null || printf "%s" "$USER"'
+when = true
+format = '[$output ](base bg:blue)'
 
 # An alternative to the username module which displays a symbol that
 # represents the current operating system
