@@ -14,7 +14,7 @@ The root [`install.sh`](./install.sh) script installs and configures:
   `direnv`, `bat`, `bubblewrap`, `btop`
 - Node tooling: `node`, `npm`, `pnpm`, `yarn`
 - Agent CLIs: `codex`, `claude`, `gemini`
-- Python tooling: `python3`, `pipx`, `pyenv`
+- Python tooling: `python3`, `pipx`, `pyenv`, `uv`
 - Rust tooling: `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
 - Go: `go`
 - Neovim: pinned to `0.10.4`
@@ -23,6 +23,7 @@ The root [`install.sh`](./install.sh) script installs and configures:
 
 - Upgrades distro-managed packages conservatively with `apt-get upgrade`
 - Installs `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, and TPM
+- Installs `uv` into `~/.local/bin` without modifying shell profiles
 - Installs the managed global Node packages for this setup, including the agent CLIs
 - Creates the repo-managed symlinks into `$HOME`
 - Exposes Ubuntu's `fdfind` and `batcat` binaries as `fd` and `bat`
