@@ -16,6 +16,7 @@ NEOVIM_INSTALL_DIR="${NEOVIM_PARENT_DIR}/nvim-linux-x86_64-${NEOVIM_VERSION}"
 NEOVIM_CACHE_DIR="${HOME}/.cache/vm-dotfiles"
 NEOVIM_TARBALL="${NEOVIM_CACHE_DIR}/nvim-linux-x86_64-${NEOVIM_VERSION}.tar.gz"
 NEOVIM_ARCHIVE_URL="https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz"
+UV_INSTALLER_URL="https://astral.sh/uv/install.sh"
 
 APT_PACKAGES=(
   build-essential
@@ -195,6 +196,12 @@ install_shell_tooling() {
   clone_if_missing "https://github.com/pyenv/pyenv.git" "${PYENV_DIR}"
 }
 
+install_uv() {
+  log "Installing or updating uv in ${LOCAL_BIN_DIR}"
+  mkdir -p "${LOCAL_BIN_DIR}"
+  curl -LsSf "${UV_INSTALLER_URL}" | env UV_INSTALL_DIR="${LOCAL_BIN_DIR}" UV_NO_MODIFY_PATH=1 sh
+}
+
 install_rust_tools() {
   log "Initializing rustup toolchain"
   export PATH="${HOME}/.cargo/bin:${PATH}"
@@ -281,6 +288,7 @@ main() {
   install_neovim
   install_nodejs
   install_shell_tooling
+  install_uv
   install_rust_tools
   install_node_globals
   create_linux_shims

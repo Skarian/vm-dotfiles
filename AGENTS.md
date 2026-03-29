@@ -53,7 +53,7 @@ The VM bootstrap is expected to install:
   `bubblewrap`
 - `Node.js 20+`, `npm`, `pnpm`, `yarn`
 - `codex`, `claude`, `gemini`
-- `python3`, `pipx`, `pyenv`
+- `python3`, `pipx`, `pyenv`, `uv`
 - `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
 - `go`
 - `btop`
@@ -141,6 +141,6 @@ for at least:
 - Core shell and CLI tools: `git`, `zsh`, `tmux`, `rg`, `fd`, `bat`, `jq`,
   `direnv`, `bwrap`
 - Node and agent CLIs: `node`, `npm`, `pnpm`, `yarn`, `codex`, `claude`, `gemini`
-- Python tooling: `python3`, `pipx`, `pyenv`
+- Python tooling: `python3`, `pipx`, `pyenv`, `uv`
 - Rust tooling: `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
 - Other tools: `nvim`, `go`, `btop`
