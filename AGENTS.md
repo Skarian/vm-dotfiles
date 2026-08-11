@@ -52,7 +52,7 @@ The VM bootstrap is expected to install:
 - `zsh`, `git`, `tmux`, `ripgrep`, `fd`, `fzf`, `jq`, `direnv`, `bat`,
   `bubblewrap`
 - `Node.js 20+`, `npm`, `pnpm`, `yarn`
-- `codex`, `claude`, `gemini`
+- standalone `codex`; npm-managed `claude`, `gemini`
 - `python3`, `pipx`, `pyenv`, `uv`
 - `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
 - `go`
@@ -73,6 +73,33 @@ Neovim is pinned to `0.10.4`.
 - Installed zsh plugins: `zsh-autosuggestions`, `zsh-syntax-highlighting`
 - TPM is expected for tmux plugins
 - TPM plugin installation may be bootstrapped by the installer
+
+## CLI Tool Ownership
+
+- Codex is installed and updated with OpenAI's standalone installer
+- The active Codex path is `~/.local/bin/codex`, resolving into
+  `~/.codex/packages/standalone`
+- Do not install Codex with npm or replace the exe.dev-provided
+  `/usr/local/bin/codex`
+- npm's user-level global prefix is `~/.local`
+- Keep npm's global lifecycle-script allowlist limited to reviewed dependencies;
+  do not enable all install scripts globally
+- Run `./update-cli-tools.sh` to update Codex and the npm-managed CLI tools
+- The legacy `~/node` prefix is not part of `PATH`
+
+Other updater ownership must remain consistent with the installation method:
+
+- apt owns the distro packages, Node.js, and the `rustup` executable
+- `rustup update` owns the user toolchain; distro rustup may reject
+  `rustup self update` and direct the user back to apt
+- uv owns `~/.local/bin/uv` and supports `uv self update`
+- Cargo owns `just`, `eza`, `macchina`, and `starship` under `~/.cargo/bin`
+- Oh My Zsh, its external zsh plugins, TPM, TPM plugins, and pyenv are
+  user-owned Git checkouts
+- AstroNvim's Lazy and Mason data is user-owned; the Neovim executable remains
+  repo-pinned under `~/.local/opt`
+- Do not add a second package manager for one of these tools merely to provide
+  a different update command
 
 ## Agent Rules
 
@@ -144,3 +171,14 @@ for at least:
 - Python tooling: `python3`, `pipx`, `pyenv`, `uv`
 - Rust tooling: `rustup`, `cargo`, `just`, `eza`, `macchina`, `starship`
 - Other tools: `nvim`, `go`, `btop`
+
+Also verify CLI ownership and update routing:
+
+- `npm config get prefix` reports `~/.local`
+- `~/.local/bin/codex` resolves into `~/.codex/packages/standalone`
+- npm-managed CLI binaries resolve from `~/.local/bin`
+- Any exe.dev-provided `/usr/local/bin/codex` remains lower priority
+- `uv self update`, `rustup update`, `omz update`, TPM's plugin updater, and
+  `:AstroUpdate` can complete from a normal user session
+- Cargo-installed binaries resolve from `~/.cargo/bin` and remain user-owned
+- distro-installed executables remain root-owned and apt-managed

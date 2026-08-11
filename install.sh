@@ -3,7 +3,6 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_BIN_DIR="${HOME}/.local/bin"
-NODE_GLOBAL_PREFIX="${HOME}/node"
 OH_MY_ZSH_DIR="${HOME}/.oh-my-zsh"
 OH_MY_ZSH_CUSTOM="${OH_MY_ZSH_DIR}/custom"
 TPM_DIR="${HOME}/.tmux/plugins/tpm"
@@ -43,16 +42,6 @@ CARGO_PACKAGES=(
   eza
   macchina
   starship
-)
-
-NPM_GLOBALS=(
-  @openai/codex
-  @anthropic-ai/claude-code
-  @google/gemini-cli
-  typescript
-  neovim
-  pnpm
-  yarn
 )
 
 log() {
@@ -199,6 +188,8 @@ install_shell_tooling() {
 install_uv() {
   log "Installing or updating uv in ${LOCAL_BIN_DIR}"
   mkdir -p "${LOCAL_BIN_DIR}"
+  export PATH="${LOCAL_BIN_DIR}:${PATH}"
+  hash -r
   curl -LsSf "${UV_INSTALLER_URL}" | env UV_INSTALL_DIR="${LOCAL_BIN_DIR}" UV_NO_MODIFY_PATH=1 sh
 }
 
@@ -209,13 +200,6 @@ install_rust_tools() {
 
   log "Installing cargo packages"
   cargo install --locked "${CARGO_PACKAGES[@]}"
-}
-
-install_node_globals() {
-  log "Installing global Node packages into ${NODE_GLOBAL_PREFIX}"
-  mkdir -p "${NODE_GLOBAL_PREFIX}"
-  export PATH="${NODE_GLOBAL_PREFIX}/bin:${PATH}"
-  npm install -g --prefix "${NODE_GLOBAL_PREFIX}" "${NPM_GLOBALS[@]}"
 }
 
 create_linux_shims() {
@@ -229,12 +213,10 @@ create_linux_shims() {
   if have batcat; then
     ln -sfn "$(command -v batcat)" "${LOCAL_BIN_DIR}/bat"
   fi
+}
 
-  for tool in codex claude gemini pnpm tsc tsserver neovim-node-host; do
-    if [ -e "${NODE_GLOBAL_PREFIX}/bin/${tool}" ]; then
-      ln -sfn "${NODE_GLOBAL_PREFIX}/bin/${tool}" "${LOCAL_BIN_DIR}/${tool}"
-    fi
-  done
+install_cli_tools() {
+  "${DOTFILES_DIR}/update-cli-tools.sh"
 }
 
 setup_symlinks() {
@@ -287,10 +269,10 @@ main() {
   install_apt_packages
   install_neovim
   install_nodejs
+  install_cli_tools
   install_shell_tooling
   install_uv
   install_rust_tools
-  install_node_globals
   create_linux_shims
   setup_symlinks
   set_default_shell
