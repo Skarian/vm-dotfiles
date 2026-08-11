@@ -64,7 +64,8 @@ Neovim is pinned to `0.10.4`.
 
 - Do not rely on the distro `neovim` package version
 - Use the repo bootstrap, which installs the official `0.10.4` Linux tarball
-- Do not add automatic headless AstroNvim bootstrap into the installer
+- The installer must finish the headless AstroNvim bootstrap, including the
+  locked Lazy plugin set, configured Treesitter parsers, and Mason-managed tools
 
 ## Shell and Tmux Notes
 

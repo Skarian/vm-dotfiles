@@ -31,6 +31,8 @@ The root [`install.sh`](./install.sh) script installs and configures:
 - Exposes Ubuntu's `fdfind` and `batcat` binaries as `fd` and `bat`
 - Switches the login shell to `zsh`
 - Bootstraps tmux plugins
+- Fully bootstraps AstroNvim, including the locked Lazy plugin set, configured
+  Treesitter parsers, and Mason-managed LSP, formatter, linter, and debugger tools
 
 ## Usage
 
@@ -42,9 +44,9 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-After the installer finishes, open a new shell session. Then use the agent for
-follow-up setup, including Git identity configuration, validation, or
-machine-specific tweaks.
+After the installer finishes, open a new shell session. AstroNvim is ready on
+its first interactive launch. Then use the agent for follow-up setup, including
+Git identity configuration, validation, or machine-specific tweaks.
 
 ## Updating Installed Tools
 

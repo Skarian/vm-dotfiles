@@ -15,6 +15,7 @@ require("lazy").setup({
   { import = "plugins" },
 } --[[@as LazySpec]], {
   -- Configure any other `lazy.nvim` configuration options here
+  lockfile = vim.env.VM_DOTFILES_NVIM_LOCKFILE or nil,
   install = { colorscheme = { "astrodark", "habamax" } },
   ui = { backdrop = 100 },
   performance = {
