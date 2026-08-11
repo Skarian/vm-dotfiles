@@ -30,7 +30,9 @@ APT_PACKAGES=(
   direnv
   bat
   bubblewrap
+  unzip
   python3
+  python3-venv
   pipx
   rustup
   golang-go
@@ -262,6 +264,28 @@ bootstrap_tmux() {
   tmux kill-session -t bootstrap >/dev/null 2>&1 || true
 }
 
+bootstrap_neovim() {
+  local bootstrap_lockfile
+  local nvim_lockfile
+
+  log "Bootstrapping AstroNvim plugins, Treesitter parsers, and Mason tools"
+  export PATH="${LOCAL_BIN_DIR}:${HOME}/.cargo/bin:${PATH}"
+  nvim_lockfile="${DOTFILES_DIR}/astronvim_v4/lazy-lock.json"
+  bootstrap_lockfile="$(mktemp)"
+  cp "${nvim_lockfile}" "${bootstrap_lockfile}"
+
+  VM_DOTFILES_NVIM_BOOTSTRAP=plugins VM_DOTFILES_NVIM_LOCKFILE="${bootstrap_lockfile}" \
+    NVIM_APPNAME=astronvim_v4 \
+      nvim --headless -i NONE "+Lazy! restore" +qa
+  cp "${nvim_lockfile}" "${bootstrap_lockfile}"
+  VM_DOTFILES_NVIM_BOOTSTRAP=plugins VM_DOTFILES_NVIM_LOCKFILE="${bootstrap_lockfile}" \
+    NVIM_APPNAME=astronvim_v4 \
+      nvim --headless -i NONE "+Lazy! restore" +qa
+  rm -f "${bootstrap_lockfile}"
+  VM_DOTFILES_NVIM_BOOTSTRAP=assets NVIM_APPNAME=astronvim_v4 \
+    nvim --headless -i NONE "+lua require('vm_bootstrap').command()"
+}
+
 main() {
   require_user_context
   require_apt
@@ -277,8 +301,9 @@ main() {
   setup_symlinks
   set_default_shell
   bootstrap_tmux
+  bootstrap_neovim
 
-  log "Done. Open a new shell session to pick up the default zsh login shell."
+  log "Done. Open a new shell session to pick up the default zsh login shell. Neovim is ready to use."
 }
 
 main "$@"
